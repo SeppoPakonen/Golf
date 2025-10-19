@@ -54,7 +54,7 @@ public:
 	
 	void AddObject(RudePhysicsObject *obj);  // Stub implementation needed
 	
-	RudePhysicsObject * GetObject(const void *cobj) { return nullptr; }  // Placeholder
+	RudePhysicsObject * GetObject(const void * /*cobj*/) { return nullptr; }  // Placeholder
 #endif
 	
 	void SetPrecise(bool p) { m_precise = p; }

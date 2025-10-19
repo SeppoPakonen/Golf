@@ -150,7 +150,7 @@ void Cleanup() {
     SDL_Quit();
 }
 
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
     // Setup graphics
     if (!SetupGraphics()) {
         printf("Failed to setup graphics\n");
@@ -211,11 +211,8 @@ int main(int argc, char* argv[]) {
             // Handle mouse events (for touch emulation)
             else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 RudeScreenVertex pos(e.button.x, e.button.y);
-                // Create a temporary RudeTouch object for this event
-                RudeTouch tempTouch;
-                tempTouch.m_location = pos;
                 if (gVBGame)
-                    gVBGame->TouchDown(&tempTouch);
+                    gVBGame->TouchDown(pos);
             }
             else if (e.type == SDL_MOUSEMOTION) {
                 RudeScreenVertex pos(e.motion.x, e.motion.y);
@@ -223,12 +220,8 @@ int main(int argc, char* argv[]) {
                 if (prevPos.m_x == -1 && prevPos.m_y == -1)
                     prevPos = pos;
                 
-                // Create a temporary RudeTouch object for this event
-                RudeTouch tempTouch;
-                tempTouch.m_prev = prevPos;
-                tempTouch.m_location = pos;
                 if (gVBGame)
-                    gVBGame->TouchMove(&tempTouch);
+                    gVBGame->TouchMove(pos, prevPos);
                 prevPos = pos;
             }
             else if (e.type == SDL_MOUSEBUTTONUP) {
@@ -237,12 +230,8 @@ int main(int argc, char* argv[]) {
                 if (prevPos.m_x == -1 && prevPos.m_y == -1)
                     prevPos = pos;
                 
-                // Create a temporary RudeTouch object for this event
-                RudeTouch tempTouch;
-                tempTouch.m_prev = prevPos;
-                tempTouch.m_location = pos;
                 if (gVBGame)
-                    gVBGame->TouchUp(&tempTouch);
+                    gVBGame->TouchUp(pos, prevPos);
                 prevPos = pos;
             }
         }

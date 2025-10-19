@@ -35,7 +35,7 @@ public:
 	
 private:
 	
-	RudeTextControl m_text;
+	RudeTextControl *m_text;
 	
 	float m_timer;
 	

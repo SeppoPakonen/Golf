@@ -42,14 +42,16 @@ RBUITitle::RBUITitle()
 	m_sphere.LoadPhysicsSphere(1.0f, 1.0f);
 #endif
 
-	m_text.SetAnimType(kAnimPopSlide);
-	m_text.SetText("Bork3D Engine");
-	m_text.SetAlignment(RudeTextControl::kAlignCenter);
-	m_text.SetRect(RudeRect(0, 0, 240, 320));
-	m_text.SetStyle(kOutlineStyle);
-	m_text.SetFont(kBigFont);
-	m_text.SetColors(0, 0xFFFFFFFF, 0xFFCCCCCC);
-	m_text.SetColors(1, 0xFF000000, 0xFF000000);
+	// Initialize the text control with nullptr as parent since RBGameBase is not a RudeControl
+	m_text = new RudeTextControl(nullptr);
+	m_text->SetAnimType(kAnimPopSlide);
+	m_text->SetText("Bork3D Engine");
+	m_text->SetAlignment(RudeTextControl::kAlignCenter);
+	m_text->SetFileRect(RudeRect(0, 0, 240, 320));  // Changed from SetRect to SetFileRect
+	m_text->SetStyle(kOutlineStyle);
+	m_text->SetFont(kBigFont);
+	m_text->SetColors(0, 0xFFFFFFFF, 0xFFCCCCCC);
+	m_text->SetColors(1, 0xFF000000, 0xFF000000);
 	
 	m_timer = 0.0f;
 	
@@ -58,6 +60,8 @@ RBUITitle::RBUITitle()
 
 RBUITitle::~RBUITitle()
 {
+	delete m_text;
+	m_text = nullptr;
 }
 
 void RBUITitle::Reset()
@@ -90,7 +94,7 @@ void RBUITitle::NextFrame(float delta)
 	m_camera.SetPos(camera);
 	m_camera.SetLookAt(lookat);
 
-	m_text.NextFrame(delta);
+	m_text->NextFrame(delta);
 }
 
 void RBUITitle::Render(float width, float height)
@@ -133,23 +137,23 @@ void RBUITitle::Render(float width, float height)
 	RGL.Enable(kBackfaceCull, false);
 	RGL.Enable(kDepthTest, false);
 	
-	m_text.Render();
+	m_text->Render();
 	
 }
 
-void RBUITitle::TouchDown(RudeTouch *rbt)
+void RBUITitle::TouchDown(RudeTouch * /*rbt*/)
 {
 	
 }
 
-void RBUITitle::TouchMove(RudeTouch *rbt)
+void RBUITitle::TouchMove(RudeTouch * /*rbt*/)
 {
 }
 
-void RBUITitle::TouchUp(RudeTouch *rbt)
+void RBUITitle::TouchUp(RudeTouch * /*rbt*/)
 {
-	m_text.SetTranslation(btVector3(0,-400,0));
-	m_text.SetDesiredTranslation(btVector3(0,0,0));
+	m_text->SetTranslation(btVector3(0,-400,0));
+	m_text->SetDesiredTranslation(btVector3(0,0,0));
 	
 #ifdef USE_BULLET_PHYSICS
 	btTransform trans;

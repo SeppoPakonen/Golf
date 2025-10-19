@@ -17,7 +17,7 @@ public:
 	
 	RBCamera();
 	
-	virtual void NextFrame(float delta)
+	virtual void NextFrame(float /*delta*/)
 	{
 	}
 	
