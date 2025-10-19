@@ -42,6 +42,15 @@
 #include <stdlib.h>
 #endif
 
+#ifdef USE_SDL
+#include <cmath>
+#include <cstdlib>
+using std::sqrt;
+using std::cos;
+using std::sin;
+using std::atan2;
+#endif
+
 /**
  * Math wrappers.  Useful for making your math operations cross-platform.
  */
@@ -71,6 +80,10 @@ public:
 #endif
 		
 #if defined(RUDE_IPHONE) || defined(RUDE_MACOS)
+		return rand();
+#endif
+
+#ifdef USE_SDL
 		return rand();
 #endif
 	}
@@ -158,6 +171,10 @@ public:
 #endif
 		
 #if defined(RUDE_IPHONE) || defined(RUDE_MACOS)
+		return atan2(x, y);
+#endif
+
+#ifdef USE_SDL
 		return atan2(x, y);
 #endif
 	}

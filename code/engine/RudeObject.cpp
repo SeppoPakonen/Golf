@@ -8,7 +8,9 @@
 
 #include "RudeObject.h"
 #include "RudeMesh.h"
+#ifndef RUDE_NO_SKINNED_MESH
 #include "RudeSkinnedMesh.h"
+#endif
 #include "RudePhysicsMesh.h"
 #include "RudePhysicsSphere.h"
 #include "RudeGL.h"
@@ -45,9 +47,15 @@ void RudeObject::LoadMesh(const char *name)
 
 void RudeObject::LoadSkinnedMesh(const char *name)
 {
+#ifdef RUDE_NO_SKINNED_MESH
+	// Skinned mesh functionality not available in this build
+	// Just load as a regular mesh
+	LoadMesh(name);
+#else
 	m_mesh = new RudeSkinnedMesh(this);
 	
 	m_mesh->Load(name);
+#endif
 }
 
 void RudeObject::LoadPhysicsMesh(float mass)

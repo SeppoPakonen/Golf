@@ -11,7 +11,12 @@
 
 #include "Rude.h"
 
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
+#else
+// Fallback math structures if Bullet Physics is not available
+#include "RudeGL.h" // This already defines btVector3
+#endif
 
 class RudeMesh;
 class RudeSkinnedMesh;

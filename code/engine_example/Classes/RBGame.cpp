@@ -16,6 +16,7 @@
 #include "RudeSound.h"
 #include "RudeTimer.h"
 #include "RudeTweaker.h"
+#include <ctime>
 
 #include "RBUITitle.h"
 
@@ -135,38 +136,42 @@ void RBGame::StylusMove(RudeScreenVertex &p)
 
 }
 
-void RBGame::TouchDown(RudeScreenVertex &n)
+bool RBGame::TouchDown(RudeTouch *rbt)
 {
-	RudeTouch *touch = m_touchtracker.NewTouch(n);
-	RUDE_ASSERT(touch, "Could not create touch");
+	// RudeTouch *touch = m_touchtracker.NewTouch(n);
+	// RUDE_ASSERT(touch, "Could not create touch");
 	
-	m_game->TouchDown(touch);
+	m_game->TouchDown(rbt);
+	return false;
 }
 
-void RBGame::TouchMove(RudeScreenVertex &n, RudeScreenVertex &p)
+bool RBGame::TouchMove(RudeTouch *rbt)
 {
-	RudeTouch *touch = m_touchtracker.GetTouch(p);
-	touch->m_location = n;
+	// RudeTouch *touch = m_touchtracker.GetTouch(p);
+	// touch->m_location = n;
 	
-	m_game->TouchMove(touch);
+	// m_game->TouchMove(touch);
+	m_game->TouchMove(rbt);
+	return false;
 }
 
-void RBGame::TouchUp(RudeScreenVertex &n, RudeScreenVertex &p)
+bool RBGame::TouchUp(RudeTouch *rbt)
 {	
-	// p is the previous position from movement (so it might not have changed..)
-	RudeTouch *touch = m_touchtracker.GetTouch(n);
+	// // p is the previous position from movement (so it might not have changed..)
+	// RudeTouch *touch = m_touchtracker.GetTouch(n);
+	// 
+	// if(touch == 0)
+	// 	touch = m_touchtracker.GetTouch(p);
+	// 
+	// if(touch == 0)
+	// 	return false;
+	// 
+	// touch->m_location = n;
 	
-	if(touch == 0)
-		touch = m_touchtracker.GetTouch(p);
+	m_game->TouchUp(rbt);
 	
-	if(touch == 0)
-		return;
-	
-	touch->m_location = n;
-	
-	m_game->TouchUp(touch);
-	
-	m_touchtracker.ReleaseTouch(touch);
+	// m_touchtracker.ReleaseTouch(touch);
+	return false;
 }
 
 void RBGame::Pause()
