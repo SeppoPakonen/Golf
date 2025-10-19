@@ -9,6 +9,7 @@
 #include "RudePhysicsSphere.h"
 #include "RudePhysics.h"
 
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
 
 RudePhysicsSphere::RudePhysicsSphere(RudeObject *owner)
@@ -40,3 +41,22 @@ void RudePhysicsSphere::Load(float radius, float mass)
 	//m_rigidBody->applyForce(btVector3(10,0,0), btVector3(0,0,0));
 }
 
+#else  // USE_BULLET_PHYSICS
+
+// Stub implementations when Bullet Physics is disabled
+RudePhysicsSphere::RudePhysicsSphere(RudeObject *owner)
+: RudePhysicsObject(owner)
+{
+}
+
+RudePhysicsSphere::~RudePhysicsSphere()
+{
+	// Nothing to clean up in stub implementation
+}
+
+void RudePhysicsSphere::Load(float radius, float mass)
+{
+	// No-op when Bullet Physics is disabled
+}
+
+#endif // USE_BULLET_PHYSICS

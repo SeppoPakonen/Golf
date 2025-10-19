@@ -105,4 +105,42 @@ private:
 
 #endif // RUDE_WIN
 
+#ifdef USE_SDL
+#ifdef __linux__
+#include <sys/time.h>
+
+class RudeTimer
+{
+public:
+
+	RudeTimer()
+	{
+		Restart();
+	}
+
+	void Restart()
+	{
+		gettimeofday(&m_starttime, NULL);
+	}
+	
+	float ElapsedSeconds()
+	{
+		struct timeval now;
+		gettimeofday(&now, NULL);
+		
+		float elapsed = (now.tv_sec - m_starttime.tv_sec) + 
+						(now.tv_usec - m_starttime.tv_usec) / 1000000.0f;
+		
+		return elapsed;
+	}
+
+private:
+	
+	struct timeval m_starttime;
+
+};
+
+#endif // __linux__
+#endif // USE_SDL
+
 #endif

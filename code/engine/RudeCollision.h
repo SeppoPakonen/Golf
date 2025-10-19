@@ -9,7 +9,12 @@
 #ifndef __H_RudeCollision
 #define __H_RudeCollision
 
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
+#else
+// Include RudeGL.h which has the fallback btVector3 definition
+#include "RudeGL.h"
+#endif
 
 class RudeCollision
 {

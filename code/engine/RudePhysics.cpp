@@ -11,6 +11,8 @@
 #include "RudePhysicsObject.h"
 #include "RudeDebug.h"
 
+#ifdef USE_BULLET_PHYSICS
+
 inline btScalar	calculateCombinedFriction(float friction0,float friction1)
 {
 	btScalar friction = friction0 * friction1;
@@ -43,7 +45,7 @@ static bool CustomMaterialCombinerCallback(btManifoldPoint& cp,	const btCollisio
 	RudePhysicsObject *obj0 = RudePhysics::GetInstance()->GetObject(colObj0);
 	RudePhysicsObject *obj1 = RudePhysics::GetInstance()->GetObject(colObj1);
 	
-	
+
 	if (colObj0->getCollisionFlags() & btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK)
 	{
 		RUDE_ASSERT(obj0, "Custom callback but no object registered");
@@ -68,6 +70,7 @@ static bool CustomMaterialCombinerCallback(btManifoldPoint& cp,	const btCollisio
 	//this return value is currently ignored, but to be on the safe side: return false if you don't calculate friction
 	return true;
 }
+
 
 
 
@@ -98,11 +101,11 @@ void RudePhysics::Init()
 	if(m_dynamicsWorld)
 		return;
 	
-	
+
 	gContactAddedCallback = CustomMaterialCombinerCallback;
 	
 	int maxProxies = 1024;
-	
+
 	btVector3 worldAabbMin(-10000,-10000,-10000);
 	btVector3 worldAabbMax(10000,10000,10000);
 	
@@ -118,7 +121,7 @@ void RudePhysics::Init()
 	
 	m_dynamicsWorld->setGravity(btVector3(0,-32.2f,0));
 	
-	
+
 
 }
 
@@ -181,3 +184,47 @@ void RudePhysics::NextFrame(float delta)
     }
 }
 
+#else // USE_BULLET_PHYSICS
+
+// Stub implementations when Bullet Physics is disabled
+RudePhysics::RudePhysics()
+: m_dynamicsWorld(nullptr)
+, m_precise(true)
+{
+}
+
+RudePhysics::~RudePhysics()
+{
+}
+
+RudePhysics * RudePhysics::GetInstance()
+{
+	static RudePhysics * s_singleton = 0;
+	
+	if(s_singleton == 0)
+		s_singleton = new RudePhysics();
+	
+	return s_singleton;
+}
+
+void RudePhysics::Init()
+{
+	// No-op when Bullet Physics disabled
+}
+
+void RudePhysics::Destroy()
+{
+	// No-op when Bullet Physics disabled
+}
+
+void RudePhysics::AddObject(RudePhysicsObject *obj)
+{
+	// No-op when Bullet Physics disabled
+}
+
+void RudePhysics::NextFrame(float delta)
+{
+	// No-op when Bullet Physics disabled
+}
+
+#endif // USE_BULLET_PHYSICS

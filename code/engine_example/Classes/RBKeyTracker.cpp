@@ -8,8 +8,19 @@
  *
  */
 
-#include "RBkeytracker.h"
+#include "RBKeyTracker.h"
 
+#ifndef _T
+#define _T(x) x
+#endif
+
+#ifndef _stprintf
+#define _stprintf sprintf
+#endif
+
+#ifndef _tcscat
+#define _tcscat strcat
+#endif
 
 RBKeyTracker::RBKeyTracker(void)
 {

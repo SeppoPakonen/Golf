@@ -24,9 +24,10 @@
 #include <FreeImage.h>
 #endif
 
-
+#if USE_PVR_TEXT
 #include "PVRTTexture.h"
 #include "PVRTTextureAPI.h"
+#endif
 
 RudeTexture::RudeTexture()
 : m_height(0)
@@ -38,13 +39,14 @@ RudeTexture::RudeTexture()
 
 RudeTexture::~RudeTexture()
 {
-	if(m_texture == -1)
+	if(m_texture != -1)
 	{
 		glDeleteTextures(1, &m_texture);
 		m_texture = -1;
 	}
 }
 
+#if USE_PVR_TEXT
 int RudeTexture::LoadFromPVRTFile(const char *name)
 {
 	RUDE_REPORT("LoadFromPVRTFile %s\n", name);
@@ -87,6 +89,19 @@ int RudeTexture::LoadFromPVRTPointer(const char *name, const void *data)
 	
 	return 0;
 }
+#else  // USE_PVR_TEXT
+int RudeTexture::LoadFromPVRTFile(const char *name)
+{
+	// No-op when PowerVR is disabled
+	return -1;
+}
+
+int RudeTexture::LoadFromPVRTPointer(const char *name, const void *data)
+{
+	// No-op when PowerVR is disabled
+	return -1;
+}
+#endif // USE_PVR_TEXT
 
 int RudeTexture::LoadFromPNG(const char *name)
 {	
@@ -137,7 +152,7 @@ int RudeTexture::LoadFromPNG(const char *name)
 	CGContextDrawImage(imageContext, CGRectMake(0.0, 0.0, (CGFloat) m_width, (CGFloat) m_height), image);
 	CGContextRelease(imageContext);
 	
-	
+
 	glGenTextures(1, &m_texture);
 	RUDE_ASSERT(m_texture >= 0, "Failed to gen texture");
 	
@@ -155,7 +170,7 @@ int RudeTexture::LoadFromPNG(const char *name)
 	CFRelease(image);
 	
 LoadFromPNG_ImageRefFail:
-	
+
 	
 LoadFromPNG_URLProviderFail:
 	CFRelease(url);
@@ -222,7 +237,13 @@ LoadFromPNG_URLFail:
 
 	return 0;
 #endif
+
+#if !defined(RUDE_IPHONE) && !defined(RUDE_MACOS) && !defined(RUDE_WIN)
+	// For SDL builds without platform-specific texture loading, return error
+	return -1;
+#endif
 }
+
 
 
 
@@ -234,6 +255,5 @@ void RudeTexture::SetActive()
 	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_BLEND);
 	
-	
-}
 
+}

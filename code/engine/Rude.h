@@ -241,12 +241,24 @@ typedef unsigned long long u64;
 
 #endif // RUDE_MACOS
 
+
+#ifdef USE_SDL
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include <GL/glu.h>
+#endif // USE_SDL
+
 //  ASSERTS...
 #ifndef __RUDE__DEBUG
 #define __RUDE__DEBUG
 #ifdef RUDE_DEBUG
 
 #include <stdarg.h>
+#include <cstdio>
+#include <cstdlib>
 
 inline void RudeAssert(const char *file, int line, const char *pszFormat, ...)
 {

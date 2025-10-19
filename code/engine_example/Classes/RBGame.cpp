@@ -136,42 +136,36 @@ void RBGame::StylusMove(RudeScreenVertex &p)
 
 }
 
-bool RBGame::TouchDown(RudeTouch *rbt)
+void RBGame::TouchDown(RudeScreenVertex &n)
 {
-	// RudeTouch *touch = m_touchtracker.NewTouch(n);
-	// RUDE_ASSERT(touch, "Could not create touch");
+	RudeTouch *touch = m_touchtracker.NewTouch(n);
+	RUDE_ASSERT(touch, "Could not create touch");
 	
-	m_game->TouchDown(rbt);
-	return false;
+	m_game->TouchDown(touch);
 }
 
-bool RBGame::TouchMove(RudeTouch *rbt)
+void RBGame::TouchMove(RudeScreenVertex &n, RudeScreenVertex &p)
 {
-	// RudeTouch *touch = m_touchtracker.GetTouch(p);
-	// touch->m_location = n;
-	
-	// m_game->TouchMove(touch);
-	m_game->TouchMove(rbt);
-	return false;
+	// Use the 'p' parameter as the touch to move (the current position)
+	RudeTouch *touch = m_touchtracker.GetTouch(p);
+	if (touch != NULL) {
+		touch->m_location = n;  // Update location to new position
+		m_game->TouchMove(touch);
+	}
 }
 
-bool RBGame::TouchUp(RudeTouch *rbt)
-{	
-	// // p is the previous position from movement (so it might not have changed..)
-	// RudeTouch *touch = m_touchtracker.GetTouch(n);
-	// 
-	// if(touch == 0)
-	// 	touch = m_touchtracker.GetTouch(p);
-	// 
-	// if(touch == 0)
-	// 	return false;
-	// 
-	// touch->m_location = n;
+void RBGame::TouchUp(RudeScreenVertex &n, RudeScreenVertex &p)
+{
+	// Use either n or p as the touch to release (they should represent the same touch point)
+	RudeTouch *touch = m_touchtracker.GetTouch(n);
 	
-	m_game->TouchUp(rbt);
+	if (touch == NULL) 
+		touch = m_touchtracker.GetTouch(p);
 	
-	// m_touchtracker.ReleaseTouch(touch);
-	return false;
+	if (touch != NULL) {
+		m_game->TouchUp(touch);
+		m_touchtracker.ReleaseTouch(touch);
+	}
 }
 
 void RBGame::Pause()

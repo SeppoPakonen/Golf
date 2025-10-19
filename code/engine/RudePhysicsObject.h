@@ -9,7 +9,15 @@
 #pragma once
 
 #include "Rude.h"
+
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
+#else
+#include "RudeGL.h"  // This has our fallback btVector3
+// Define fallback types for Bullet Physics when not available
+class btRigidBody {};
+// btDefaultMotionState is already defined in RudeGL.h
+#endif
 
 
 class RudeObject;

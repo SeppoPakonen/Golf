@@ -8,8 +8,7 @@
 
 #include "RudePhysicsObject.h"
 
-
-
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
 
 RudePhysicsObject::RudePhysicsObject(RudeObject *owner)
@@ -52,3 +51,31 @@ void RudePhysicsObject::Contact(const btVector3 &contactNormal, RudePhysicsObjec
 	m_contactCallback(contactNormal, this, other, mypartId, otherpartId, friction, restitution);
 }
 
+#else  // USE_BULLET_PHYSICS
+
+// Stub implementations when Bullet Physics is disabled
+RudePhysicsObject::RudePhysicsObject(RudeObject *owner)
+: m_motionState(nullptr)
+, m_rigidBody(nullptr)
+, m_notifyOnContact(false)
+, m_contactCallback(nullptr)
+, m_owner(owner)
+{
+}
+
+RudePhysicsObject::~RudePhysicsObject()
+{
+	// Nothing to clean up in stub implementation
+}
+
+void RudePhysicsObject::Render()
+{
+	// No-op when Bullet Physics is disabled
+}
+
+void RudePhysicsObject::Contact(const btVector3 &contactNormal, RudePhysicsObject *other, int mypartId, int otherpartId, float *friction, float *restitution)
+{
+	// No-op when Bullet Physics is disabled
+}
+
+#endif // USE_BULLET_PHYSICS

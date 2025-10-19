@@ -21,7 +21,147 @@
 #define kNumberSquareroot2 1.41421356237f
 #define kNumber180OverPi 57.2957792137960f
 
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
+#else
+// Define fallback implementations for Bullet Physics types when not available
+#include <cmath>
+
+// Simple 3D vector class as fallback when Bullet Physics is not available
+class btVector3 {
+public:
+    float m_floats[3];
+    
+    btVector3() { m_floats[0] = m_floats[1] = m_floats[2] = 0.0f; }
+    btVector3(float x, float y, float z) {
+        m_floats[0] = x;
+        m_floats[1] = y;
+        m_floats[2] = z;
+    }
+    
+    float& operator[](int i) { return m_floats[i]; }
+    const float& operator[](int i) const { return m_floats[i]; }
+    
+    btVector3 operator+(const btVector3& other) const {
+        return btVector3(m_floats[0] + other.m_floats[0], 
+                         m_floats[1] + other.m_floats[1], 
+                         m_floats[2] + other.m_floats[2]);
+    }
+    
+    btVector3 operator-(const btVector3& other) const {
+        return btVector3(m_floats[0] - other.m_floats[0], 
+                         m_floats[1] - other.m_floats[1], 
+                         m_floats[2] - other.m_floats[2]);
+    }
+    
+    btVector3& operator+=(const btVector3& other) {
+        m_floats[0] += other.m_floats[0];
+        m_floats[1] += other.m_floats[1];
+        m_floats[2] += other.m_floats[2];
+        return *this;
+    }
+    
+    btVector3& operator-=(const btVector3& other) {
+        m_floats[0] -= other.m_floats[0];
+        m_floats[1] -= other.m_floats[1];
+        m_floats[2] -= other.m_floats[2];
+        return *this;
+    }
+    
+    btVector3 operator*(float scalar) const {
+        return btVector3(m_floats[0] * scalar, 
+                         m_floats[1] * scalar, 
+                         m_floats[2] * scalar);
+    }
+    
+    // Friend function to handle scalar * vector (needed for float * btVector3)
+    friend btVector3 operator*(float scalar, const btVector3& vec) {
+        return btVector3(vec.m_floats[0] * scalar, 
+                         vec.m_floats[1] * scalar, 
+                         vec.m_floats[2] * scalar);
+    }
+    
+    btVector3& operator*=(float scalar) {
+        m_floats[0] *= scalar;
+        m_floats[1] *= scalar;
+        m_floats[2] *= scalar;
+        return *this;
+    }
+    
+    float length() const {
+        return sqrt(m_floats[0]*m_floats[0] + m_floats[1]*m_floats[1] + m_floats[2]*m_floats[2]);
+    }
+    
+    float dot(const btVector3& other) const {
+        return m_floats[0]*other.m_floats[0] + m_floats[1]*other.m_floats[1] + m_floats[2]*other.m_floats[2];
+    }
+    
+    // Bullet Physics compatible methods
+    float x() const { return m_floats[0]; }
+    float y() const { return m_floats[1]; }
+    float z() const { return m_floats[2]; }
+    
+    float& x() { return m_floats[0]; }
+    float& y() { return m_floats[1]; }
+    float& z() { return m_floats[2]; }
+    
+    // Additional methods required by the code
+    void normalize() {
+        float len = length();
+        if(len > 0) {
+            m_floats[0] /= len;
+            m_floats[1] /= len;
+            m_floats[2] /= len;
+        }
+    }
+    
+    btVector3 cross(const btVector3& v) const {
+        return btVector3(
+            m_floats[1] * v.m_floats[2] - m_floats[2] * v.m_floats[1],
+            m_floats[2] * v.m_floats[0] - m_floats[0] * v.m_floats[2],
+            m_floats[0] * v.m_floats[1] - m_floats[1] * v.m_floats[0]
+        );
+    }
+    
+    void setX(float x) { m_floats[0] = x; }
+    void setY(float y) { m_floats[1] = y; }
+    void setZ(float z) { m_floats[2] = z; }
+};
+
+// Define btQuaternion fallback
+class btQuaternion {
+public:
+    float m_floats[4]; // x, y, z, w
+    
+    btQuaternion() { m_floats[0] = m_floats[1] = m_floats[2] = 0.0f; m_floats[3] = 1.0f; }
+    btQuaternion(float x, float y, float z, float w) {
+        m_floats[0] = x; m_floats[1] = y; m_floats[2] = z; m_floats[3] = w;
+    }
+};
+
+// Define btTransform fallback
+class btTransform {
+public:
+    btQuaternion m_rotation;
+    btVector3 m_origin;
+    
+    btTransform() {}
+    btTransform(const btQuaternion& q, const btVector3& v) : m_rotation(q), m_origin(v) {}
+};
+
+// Define btScalar as float
+typedef float btScalar;
+
+// Define other needed Bullet Physics types
+class btDefaultMotionState {
+public:
+    btTransform m_graphicsWorldTrans;
+    btTransform m_centerOfMassOffset;
+    btTransform m_startWorldTrans;
+    
+    btDefaultMotionState(const btTransform& xform) : m_graphicsWorldTrans(xform) {}
+};
+#endif // USE_BULLET_PHYSICS
 
 
 typedef enum {

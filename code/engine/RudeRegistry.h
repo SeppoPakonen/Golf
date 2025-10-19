@@ -11,6 +11,14 @@
 
 #include "RudeGlobals.h"
 
+#ifndef TCHAR
+#ifdef _WIN32
+typedef wchar_t TCHAR;
+#else
+typedef char TCHAR;
+#endif
+#endif
+
 class RudeRegistry
 {
 public:

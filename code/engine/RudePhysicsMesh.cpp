@@ -11,8 +11,8 @@
 #include "RudePhysics.h"
 #include "RudeDebug.h"
 
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
-
 
 RudePhysicsMesh::RudePhysicsMesh(RudeObject *owner)
 : m_data(0)
@@ -34,7 +34,7 @@ void RudePhysicsMesh::Load(RudeMesh *modelmesh, float mass)
 {
 	CPVRTPODScene *model = modelmesh->GetModel();
 	
-	
+
 	m_data = new btTriangleIndexVertexArray();
 	
 	for(unsigned int i = 0; i < model->nNumNode; i++)
@@ -73,10 +73,10 @@ void RudePhysicsMesh::Load(RudeMesh *modelmesh, float mass)
 		m_subPartMappings[subpart] = i;
 	}
 	
-	
+
 	m_shape = new btBvhTriangleMeshShape(m_data, false);
 	
-	
+
 	btVector3 inertia(0,0,0);
 	if(mass > 0.0f)
 		inertia = btVector3(4,4,4);
@@ -87,9 +87,31 @@ void RudePhysicsMesh::Load(RudeMesh *modelmesh, float mass)
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, m_motionState, m_shape, inertia);
 	m_rigidBody = new btRigidBody(fallRigidBodyCI);
 	
-	
+
 	
 	RudePhysics::GetInstance()->AddObject(this);
 	
 }
 
+#else  // USE_BULLET_PHYSICS
+
+// Stub implementations when Bullet Physics is disabled
+RudePhysicsMesh::RudePhysicsMesh(RudeObject *owner)
+: RudePhysicsObject(owner)
+{
+	// Initialize pointers to null
+	m_data = nullptr;
+	m_shape = nullptr;
+}
+
+RudePhysicsMesh::~RudePhysicsMesh()
+{
+	// Nothing to clean up in stub implementation
+}
+
+void RudePhysicsMesh::Load(RudeMesh *modelmesh, float mass)
+{
+	// No-op when Bullet Physics is disabled
+}
+
+#endif // USE_BULLET_PHYSICS

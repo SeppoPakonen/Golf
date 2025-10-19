@@ -56,8 +56,9 @@ RudeSound::RudeSound()
 
 	for(int i = 0; i < kNumSounds; i++)
 	{
+#if defined(RUDE_IPHONE) || defined(RUDE_MACOS) || defined(RUDE_WIN)
 		m_soundids[i] = -1;
-
+#endif
 		LoadWave(kSoundFilenames[i], (eSoundEffect) i);
 	}
 	

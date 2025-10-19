@@ -8,6 +8,7 @@
 
 #include "RudeRegistryCF.h"
 
+#ifdef RUDE_MACOS
 #include <CoreFoundation/CFPreferences.h>
 
 RudeRegistryCF::RudeRegistryCF(void)
@@ -57,3 +58,40 @@ int RudeRegistryCF::SetByte(const TCHAR *app, const TCHAR *name, void *buffer, i
 
 	return 0;
 }
+
+#else  // RUDE_MACOS
+
+// Stub implementation for non-macOS platforms
+RudeRegistryCF::RudeRegistryCF(void)
+{
+}
+
+RudeRegistryCF::~RudeRegistryCF(void)
+{
+}
+
+
+/**
+ * Retrieve the stored data specified by the given 'app' and data 'name'.  Requires
+ * 'buffer' be pre-allocated and contains enough space to hold the data.  Pass in
+ * the size of 'buffer' with 'buffersize'.
+ *
+ * @returns -1 (failure) on non-macOS platforms which don't have CoreFoundation
+ */
+int RudeRegistryCF::QueryByte(const TCHAR *app, const TCHAR *name, void *buffer, int *buffersize)
+{
+	return -1; // Not supported on this platform
+}
+
+/**
+ * Store the data given in 'buffer' under the given 'app' and 'name'.  Pass in the size
+ * of the 'buffer' with 'buffersize'.
+ *
+ * @returns -1 (failure) on non-macOS platforms which don't have CoreFoundation
+ */
+int RudeRegistryCF::SetByte(const TCHAR *app, const TCHAR *name, void *buffer, int buffersize)
+{
+	return -1; // Not supported on this platform
+}
+
+#endif // RUDE_MACOS

@@ -15,22 +15,32 @@
 #include "RudePhysicsObject.h"
 #include "RudeSound.h"
 
-
+#ifdef USE_BULLET_PHYSICS
+#include <btBulletDynamicsCommon.h>
+#endif
 
 RBUITitle::RBUITitle()
 {
+#ifdef USE_BULLET_PHYSICS
 	RudePhysics::GetInstance()->Init();
+#endif
 	
 	m_skybox.Load("skybox");
 	
 	m_plane.LoadMesh("plane");
+#ifdef USE_BULLET_PHYSICS
 	m_plane.LoadPhysicsMesh(0.0f);
+#endif
 	
 	m_box.LoadMesh("box");
+#ifdef USE_BULLET_PHYSICS
 	m_box.LoadPhysicsMesh(0.0f);
-	
+#endif
+
 	m_sphere.LoadMesh("sphere");
+#ifdef USE_BULLET_PHYSICS
 	m_sphere.LoadPhysicsSphere(1.0f, 1.0f);
+#endif
 
 	m_text.SetAnimType(kAnimPopSlide);
 	m_text.SetText("Bork3D Engine");
@@ -52,31 +62,34 @@ RBUITitle::~RBUITitle()
 
 void RBUITitle::Reset()
 {
-	
+
 }
 
 
 
 void RBUITitle::NextFrame(float delta)
 {
+#ifdef USE_BULLET_PHYSICS
 	RudePhysics::GetInstance()->NextFrame(delta);
+#endif
 	
 	m_timer += delta;
 	
 	btVector3 lookat(0,0,0);
 	
 	btVector3 camoff(50,15,0);
+	
+#ifdef USE_BULLET_PHYSICS
 	btMatrix3x3 mat;
 	mat.setEulerYPR(m_timer * 0.1f, 0.0f, 0.0f);
 	camoff = mat * camoff;
+#endif
 	
 	btVector3 camera = lookat + camoff;
 	
 	m_camera.SetPos(camera);
 	m_camera.SetLookAt(lookat);
-	
-	
-	
+
 	m_text.NextFrame(delta);
 }
 
@@ -138,11 +151,12 @@ void RBUITitle::TouchUp(RudeTouch *rbt)
 	m_text.SetTranslation(btVector3(0,-400,0));
 	m_text.SetDesiredTranslation(btVector3(0,0,0));
 	
+#ifdef USE_BULLET_PHYSICS
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(btVector3(0,15,0));
 	m_sphere.GetPhysicsObject()->GetRigidBody()->setWorldTransform(trans);
 	m_sphere.GetPhysicsObject()->GetRigidBody()->setLinearVelocity(btVector3(0,0,-5));
 	m_sphere.GetPhysicsObject()->GetRigidBody()->activate(true);
+#endif
 }
-

@@ -10,7 +10,23 @@
 #define __H_RudePhysics
 
 #include <map>
+
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
+#else
+#include "RudeGL.h"  // This has our fallback btVector3
+// Define fallback types for Bullet Physics when not available
+class btDiscreteDynamicsWorld {};
+class btAxisSweep3 {};
+class btDefaultCollisionConfiguration {};
+class btCollisionDispatcher {};
+class btSequentialImpulseConstraintSolver {};
+class btCollisionObject {};
+class btCollisionWorld {
+public:
+    class RayResultCallback {};
+};
+#endif
 
 class RudePhysicsObject;
 
@@ -27,16 +43,25 @@ public:
 
 	void NextFrame(float delta);
 	
+#ifdef USE_BULLET_PHYSICS
 	btDiscreteDynamicsWorld * GetWorld() { return m_dynamicsWorld; }
 	
 	void AddObject(RudePhysicsObject *obj);
 	
 	RudePhysicsObject * GetObject(const btCollisionObject *cobj) { return m_objMap[cobj]; }
+#else
+	void * GetWorld() { return m_dynamicsWorld; }  // Return void* as placeholder
+	
+	void AddObject(RudePhysicsObject *obj);  // Stub implementation needed
+	
+	RudePhysicsObject * GetObject(const void *cobj) { return nullptr; }  // Placeholder
+#endif
 	
 	void SetPrecise(bool p) { m_precise = p; }
 	
 private:
 	
+#ifdef USE_BULLET_PHYSICS
 	std::map<const btCollisionObject *, RudePhysicsObject *> m_objMap;
 	
 	btDiscreteDynamicsWorld *m_dynamicsWorld;
@@ -44,9 +69,20 @@ private:
 	btDefaultCollisionConfiguration* m_collisionConfiguration;
 	btCollisionDispatcher* m_dispatcher;
 	btSequentialImpulseConstraintSolver* m_solver;
+#else
+	std::map<const void *, RudePhysicsObject *> m_objMap;  // Placeholder
+	
+	void *m_dynamicsWorld;
+	void *m_broadphase;
+	void *m_collisionConfiguration;
+	void *m_dispatcher;
+	void *m_solver;
+#endif
 	
 	bool m_precise;
 };
+
+#ifdef USE_BULLET_PHYSICS
 
 const int kMaxRayResults = 16;
 
@@ -58,7 +94,7 @@ struct	RudeRayQueryResultCallback : public btCollisionWorld::RayResultCallback
 	m_numRayResults(0)
 	{
 	}
-	
+
 	
 	btCollisionObject * m_rayResults[kMaxRayResults];
 	int m_numRayResults;
@@ -91,7 +127,7 @@ struct	RudeRayQueryResultCallback : public btCollisionWorld::RayResultCallback
 		return rayResult.m_hitFraction;
 	}
 };
+#endif // USE_BULLET_PHYSICS
 
 
 #endif
-

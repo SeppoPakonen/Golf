@@ -6,7 +6,7 @@
  *
  */
 
-#include "ruderegistry.h"
+#include "RudeRegistry.h"
 
 #ifdef RUDE_WIN
 #include "RudeRegistryWin.h"
@@ -59,6 +59,7 @@ RudeRegistry * RudeRegistry::GetSingleton()
 	return (RudeRegistry *) reg;
 	
 #else
-	return RUDE_ASSERT(0, "RudeRegistry not defined");
+	RUDE_ASSERT(0, "RudeRegistry not defined");
+	return 0; // or nullptr if we need to return some other platform-specific registry
 #endif
 }

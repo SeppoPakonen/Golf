@@ -9,12 +9,22 @@
 #ifndef __H_RudeMesh
 #define __H_RudeMesh
 
+#ifdef USE_BULLET_PHYSICS
+#include <btBulletDynamicsCommon.h>
+#else
+#include "RudeGL.h"  // This has our fallback btVector3
+#endif
+
+#if USE_PVR_TEXT
 #include "PVRTVector.h"
 #include "PVRTVertex.h"
 #include "PVRTBoneBatch.h"
 #include "PVRTModelPOD.h"
-
-#include <btBulletDynamicsCommon.h>
+#else
+// Define stubs for PowerVR types when not available
+class CPVRTPODScene {};
+typedef float PVRTMATRIX[16];  // basic matrix type
+#endif
 
 class RudeObject;
 
@@ -41,7 +51,9 @@ public:
 	
 	virtual int Load(const char *name);
 	
+#if USE_PVR_TEXT
 	CPVRTPODScene * GetModel() { return &m_model; }
+#endif
 	
 	virtual void NextFrame(float delta) {}
 	virtual void Render();
@@ -61,7 +73,13 @@ protected:
 	const char *m_colorOverrides[kMaxNodes];
 	
 	btVector3 m_scale;
+	
+#if USE_PVR_TEXT
 	CPVRTPODScene m_model;
+#else
+	void* m_model; // Placeholder when PowerVR not available
+#endif
+	
 	int m_textures[kMaxTextures];
 	int m_textureOverrides[kMaxTextures];
 	

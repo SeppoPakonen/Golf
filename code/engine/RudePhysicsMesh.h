@@ -16,7 +16,14 @@
 #include <map>
 #include <vector>
 
+#ifdef USE_BULLET_PHYSICS
 #include <btBulletDynamicsCommon.h>
+#else
+#include "RudeGL.h"  // This has our fallback btVector3
+// Define fallback types for Bullet Physics when not available
+class btTriangleIndexVertexArray {};
+class btBvhTriangleMeshShape {};
+#endif
 
 class RudeMesh;
 
@@ -35,8 +42,13 @@ protected:
 	
 	std::map<int, int> m_subPartMappings;
 	
+#ifdef USE_BULLET_PHYSICS
 	btTriangleIndexVertexArray * m_data;
 	btBvhTriangleMeshShape *m_shape;
+#else
+	void * m_data;                    // Placeholder when Bullet Physics not available
+	void *m_shape;                    // Placeholder when Bullet Physics not available
+#endif
 	
 };
 

@@ -14,6 +14,10 @@
 #include "RudeGlobals.h"
 #include "RudeRegistry.h"
 
+#ifndef _T
+#define _T(x) x
+#endif
+
 #ifdef RUDE_WIN
 #include <tchar.h>
 #include <windows.h>

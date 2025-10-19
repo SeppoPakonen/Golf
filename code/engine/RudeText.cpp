@@ -12,9 +12,9 @@
 
 #include <stdarg.h>
 
+#if USE_PVR_TEXT
 #include "PVRTFixedPoint.h"
 #include "PVRTPrint3D.h"
-
 
 CPVRTPrint3D gTextPrint;
 
@@ -42,3 +42,23 @@ void RudeText::Flush()
 	RGL.EnableClient(kTextureCoordArray, true);
 	gTextPrint.Flush();
 }
+
+#else  // USE_PVR_TEXT
+
+// Stub implementations when PowerVR text is disabled
+void RudeText::Init()
+{
+	// No-op when PowerVR text is disabled
+}
+
+void RudeText::Print(float x, float y, float scale, unsigned int color, const char * const pszFormat, ...)
+{
+	// No-op when PowerVR text is disabled
+}
+
+void RudeText::Flush()
+{
+	// No-op when PowerVR text is disabled
+}
+
+#endif // USE_PVR_TEXT

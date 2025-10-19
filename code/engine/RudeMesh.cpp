@@ -12,7 +12,7 @@
 #include "RudeFile.h"
 #include "RudeDebug.h"
 
-
+#if USE_PVR_TEXT
 
 RudeMesh::RudeMesh(RudeObject *owner)
 : m_owner(owner)
@@ -91,7 +91,7 @@ int RudeMesh::Load(const char *name)
 		SPODMesh *mesh = &m_model.pMesh[i];
 		
 		RUDE_ASSERT(mesh->pInterleaved, "Mesh data must be interleaved");
-			
+		
 		if((mesh->sVtxColours.n > 0))
 		{
 			RUDE_ASSERT(mesh->sVtxColours.eType == EPODDataRGBA, "Vertex colors must be in RGBA format");
@@ -315,6 +315,57 @@ void RudeMesh::Render()
     glDisable ( GL_ALPHA_TEST ) ;
 	
 #endif
-		
+	
+	
 }
 
+#else  // USE_PVR_TEXT is 0
+
+// Constructor and destructor for non-PVR case
+RudeMesh::RudeMesh(RudeObject *owner)
+: m_owner(owner)
+, m_scale(1.0f, 1.0f, 1.0f)
+, m_textureOverride(false)
+{
+	for(int i = 0; i < kMaxNodes; i++)
+		m_colorOverrides[i] = 0;
+	
+	for(int i = 0; i < kMaxTextures; i++)
+		m_textureOverrides[i] = -1;
+	
+	// Initialize the void* member to nullptr or allocate if needed
+	m_model = nullptr;
+}
+
+RudeMesh::~RudeMesh()
+{
+	// Clean up if needed
+}
+
+int RudeMesh::Load(const char *name)
+{
+	// When PowerVR is disabled, return error since mesh loading is not supported
+	return -1;
+}
+
+void RudeMesh::AddTextureOverride(const char *oldTexture, const char *newTexture)
+{
+	// No-op when PowerVR is disabled
+}
+
+void RudeMesh::SetColorOverride(int node, const char *colordata)
+{
+	// No-op when PowerVR is disabled
+}
+
+void RudeMesh::EnableModel(int n, bool enable)
+{
+	// No-op when PowerVR is disabled
+}
+
+void RudeMesh::Render()
+{
+	// No-op when PowerVR is disabled
+}
+
+#endif // USE_PVR_TEXT
