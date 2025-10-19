@@ -8,3 +8,23 @@ FreeImage.dll
 *.suo
 code/game/win32/Debug
 code/lib/bullet/out
+
+# Build files
+*.o
+*.obj
+*.exe
+golf
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+build/
+dist/
+*.tmp
+*.log
+
+# IDE files
+*.user
+*.vcxproj.filters
+*.vcxproj
