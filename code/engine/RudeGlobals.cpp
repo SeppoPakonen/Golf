@@ -12,6 +12,9 @@
 #include <AudioToolbox/AudioQueue.h>
 #endif
 
+// Define global verbosity level
+int gVerbosityLevel = 0;
+
 RudeGlobals::RudeGlobals()
 
 {

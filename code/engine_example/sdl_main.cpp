@@ -15,6 +15,7 @@
 #include <SDL2/SDL_main.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -150,7 +151,19 @@ void Cleanup() {
     SDL_Quit();
 }
 
-int main(int /*argc*/, char* /*argv*/[]) {
+int main(int argc, char* argv[]) {
+    // Process command line arguments for verbosity
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-v") == 0) {
+            gVerbosityLevel = 1;
+            printf("Verbosity level set to 1\n");
+        }
+        else if (strcmp(argv[i], "-v2") == 0) {
+            gVerbosityLevel = 2;
+            printf("Verbosity level set to 2\n");
+        }
+    }
+
     // Setup graphics
     if (!SetupGraphics()) {
         printf("Failed to setup graphics\n");

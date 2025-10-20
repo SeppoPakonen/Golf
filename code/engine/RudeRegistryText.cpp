@@ -20,7 +20,7 @@ RudeRegistryText::~RudeRegistryText(void)
 }
 
 
-long RudeRegistryText::QueryByte(TCHAR *app, TCHAR *name, void *buffer, long *buffersize)
+int RudeRegistryText::QueryByte(const TCHAR *app, const TCHAR *name, void *buffer, int *buffersize)
 {
 	char filename[512];
 	
@@ -40,7 +40,7 @@ long RudeRegistryText::QueryByte(TCHAR *app, TCHAR *name, void *buffer, long *bu
 	return 0;
 }
 
-long RudeRegistryText::SetByte(TCHAR *app, TCHAR *name, void *buffer, long buffersize)
+int RudeRegistryText::SetByte(const TCHAR *app, const TCHAR *name, void *buffer, int buffersize)
 {
 	char filename[512];
 	

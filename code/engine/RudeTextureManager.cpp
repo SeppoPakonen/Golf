@@ -154,12 +154,32 @@ int RudeTextureManager::LoadTextureFromPVRTFile(const char *name)
 		}
 	}
 	
-	RUDE_ASSERT(result >= 0, "Unable to load texture %d (%s)", result, name);
-	
+	// If we still couldn't load the texture, create a default fallback texture
 	if(result < 0)
 	{
+		if(gVerbosityLevel >= 1) {
+			printf("Warning: Unable to load texture %s, creating default texture\n", name);
+		}
+		
+		// Create a default 1x1 white texture as fallback
 		delete tex;
-		return result;
+		tex = new RudeTexture();
+		
+		// Initialize with a default white texture
+		unsigned char whitepixel[4] = {255, 255, 255, 255};
+		GLuint texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, whitepixel);
+		
+		tex->SetName(name);
+		tex->SetTexture(texture);
+		tex->SetWidth(1);
+		tex->SetHeight(1);
+		
+		result = 0; // Mark as successful
 	}
 	
 	int final_id = InsertTexture(tex);

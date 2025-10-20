@@ -21,8 +21,8 @@ public:
 	RudeRegistryText(void);
 	~RudeRegistryText(void);
 
-	long QueryByte(TCHAR *app, TCHAR *name, void *buffer, long *buffersize);
-	long SetByte(TCHAR *app, TCHAR *name, void *buffer, long buffersize);
+	int QueryByte(const TCHAR *app, const TCHAR *name, void *buffer, int *buffersize) override;
+	int SetByte(const TCHAR *app, const TCHAR *name, void *buffer, int buffersize) override;
 
 private:
 

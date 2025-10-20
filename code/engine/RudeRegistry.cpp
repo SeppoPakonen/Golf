@@ -22,6 +22,9 @@
 #include "RudeRegistryCF.h"
 #endif
 
+// Include text registry for Linux and other platforms
+#include "RudeRegistryText.h"
+
 RudeRegistry::RudeRegistry(void)
 {
 }
@@ -59,7 +62,22 @@ RudeRegistry * RudeRegistry::GetSingleton()
 	return (RudeRegistry *) reg;
 	
 #else
-	RUDE_ASSERT(0, "RudeRegistry not defined");
-	return 0; // or nullptr if we need to return some other platform-specific registry
+	// For Linux and other platforms, use the text file-based registry
+	#ifdef RUDE_TEXT_REGISTRY
+		static RudeRegistryText *reg = 0;
+		
+		if(reg == 0)
+			reg = new RudeRegistryText();
+		
+		return (RudeRegistry *) reg;
+	#else
+		static RudeRegistry *reg = 0;  // Fallback static instance
+		if(reg == 0) {
+			// For Linux platforms, we use RudeRegistryText implementation
+			// This is a text file-based registry that works cross-platform
+			reg = new RudeRegistryText();
+		}
+		return reg;
+	#endif
 #endif
 }

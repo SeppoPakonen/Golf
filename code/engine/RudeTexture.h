@@ -24,9 +24,13 @@ public:
 	void SetActive();
 	
 	const char * GetName() { return m_name; }
+	void SetName(const char *name) { strncpy(m_name, name, kNameLen-1); m_name[kNameLen-1] = '\0'; }
 	
 	int GetWidth() { return m_width; }
 	int GetHeight() { return m_height; }
+	void SetWidth(int width) { m_width = width; }
+	void SetHeight(int height) { m_height = height; }
+	void SetTexture(unsigned int texture) { m_texture = texture; }
 	
 private:
 	

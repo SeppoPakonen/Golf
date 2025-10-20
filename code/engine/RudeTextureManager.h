@@ -11,6 +11,7 @@
 
 #include "Rude.h"
 #include "RudeTexture.h"
+#include "RudeGlobals.h"
 
 #include <vector>
 

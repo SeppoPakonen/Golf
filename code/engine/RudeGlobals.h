@@ -13,6 +13,9 @@
 
 #include "RudeColor.h"
 
+// Global verbosity level
+extern int gVerbosityLevel;
+
 
 class RudeGlobals
 {
