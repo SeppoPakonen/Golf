@@ -24,6 +24,10 @@
 #include <FreeImage.h>
 #endif
 
+#ifdef USE_SDL
+#include <SDL2/SDL_image.h>
+#endif
+
 #if USE_PVR_TEXT
 #include "PVRTTexture.h"
 #include "PVRTTextureAPI.h"
@@ -239,8 +243,55 @@ LoadFromPNG_URLFail:
 #endif
 
 #if !defined(RUDE_IPHONE) && !defined(RUDE_MACOS) && !defined(RUDE_WIN)
-	// For SDL builds without platform-specific texture loading, return error
+	// For SDL builds, use SDL_image to load PNGs
+#ifdef USE_SDL
+	// flush glGetError
+	glGetError();
+
+	strncpy(m_name, name, kNameLen);
+
+	// Find where the file is located (using the existing filename variable)
+	char buffer[256];
+	bool found = RudeFileGetFile(filename, buffer, 256, true);  // Allow failure
+	if (!found) {
+		return -1;
+	}
+
+	// Use SDL_image to load the PNG
+	SDL_Surface* surface = IMG_Load(buffer);
+	if (!surface) {
+		RUDE_REPORT("Failed to load PNG: %s, error: %s\n", buffer, IMG_GetError());
+		return -1;
+	}
+
+	// Get dimensions
+	m_width = surface->w;
+	m_height = surface->h;
+	RUDE_REPORT("LoadFromPNG %s (%dx%d)\n", filename, m_width, m_height);
+
+	// Create OpenGL texture
+	glGenTextures(1, &m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+
+	// Upload texture to GPU directly from SDL surface
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Clean up
+	SDL_FreeSurface(surface);
+
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR) {
+		RUDE_REPORT("glTexImage2D error: 0x%x\n", error);
+		return -1;
+	}
+
+	return 0;
+#else
+	// For other non-iOS/Mac/Windows builds without SDL, return error
 	return -1;
+#endif
 #endif
 }
 
