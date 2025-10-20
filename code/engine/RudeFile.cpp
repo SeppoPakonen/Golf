@@ -60,5 +60,34 @@ bool RudeFileGetFile(const char *filename, char *buffer, int bufsize, bool canfa
 	return true;
 #endif
 
+#ifdef __LINUX__
+	snprintf(buffer, bufsize, "data/%s", filename);
+	
+	FILE *file = fopen(buffer, "r");
+	if(file == NULL)
+	{
+		buffer[0] = '\0';
+		RUDE_ASSERT(canfail, "Could not locate file %s", filename);
+		return false;
+	}
+	fclose(file);
+
+	return true;
+#endif
+
+	// Default fallback implementation for other platforms (like Android, etc.)
+	snprintf(buffer, bufsize, "data/%s", filename);
+	
+	FILE *file2 = fopen(buffer, "r");
+	if(file2 == NULL)
+	{
+		buffer[0] = '\0';
+		RUDE_ASSERT(canfail, "Could not locate file %s", filename);
+		return false;
+	}
+	fclose(file2);
+
+	return true;
+
 }
 

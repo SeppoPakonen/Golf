@@ -2,7 +2,7 @@
 # Cross-platform build for the Bork3D Golf Game Engine
 
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -O2
+CXXFLAGS = -std=c++11 -Wall -Wextra -g -O0 -fno-stack-protector -D_FORTIFY_SOURCE=0
 LDFLAGS =
 LIBS =
 
@@ -185,7 +185,7 @@ ifeq ($(USE_SDL), 0)
 endif
 
 # Don't define USE_POWERVR_SDK at all to use fallback implementation
-# Don't define USE_BULLET_PHYSICS to let the header files use fallback implementations
+# Don't define #USE_BULLET_PHYSICS to let the header files use fallback implementations
 # For now, we'll comment out Bullet Physics dependency to allow build without it
 CXXFLAGS += $(INCLUDES) $(SDL_DEFS)
 
