@@ -54,25 +54,40 @@ void RBGame::Init()
 
 void RBGame::Render(float delta, float width, float height)
 {
+	if (gVerbosityLevel >= 3) {
+		static int renderCallCount = 0;
+		if (renderCallCount % 60 == 0) { // Print every 60 renders to avoid spam
+			printf("RBGame::Render - Processing frame (delta=%.3f, width=%.0f, height=%.0f)\n", delta, width, height);
+		}
+		renderCallCount++;
+	}
 	RudePerf::NextFrame(delta);
-
+	
 	RudeTimer timer;
 	
 	
 	RudeSound::GetInstance()->Tick(delta);
-	
 	
 	const float kMaxDelta = 0.5f;
 	
 	if(delta > kMaxDelta)
 		delta = kMaxDelta;
 	
+	if (gVerbosityLevel >= 3) {
+		printf("RBGame::Render - Calling m_game->NextFrame(%.3f)\n", delta);
+	}
 	m_game->NextFrame(delta);
+	if (gVerbosityLevel >= 3) {
+		printf("RBGame::Render - Calling m_game->Render(%.0f, %.0f)\n", width, height);
+	}
 	m_game->Render(width, height);
 	
 	
 	
 	float actualElapsedSeconds = timer.ElapsedSeconds();
+	if (gVerbosityLevel >= 3) {
+		printf("RBGame::Render - Frame rendered in %.3fms\n", actualElapsedSeconds * 1000.0f);
+	}
 	RudePerf::AddStat(kFrameTotal, actualElapsedSeconds * 1000.0f);
 
 	if(gDebugDisplayFPS)

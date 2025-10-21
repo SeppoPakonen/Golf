@@ -162,15 +162,29 @@ int main(int argc, char* argv[]) {
             gVerbosityLevel = 2;
             printf("Verbosity level set to 2\n");
         }
+        else if (strcmp(argv[i], "-v3") == 0) {
+            gVerbosityLevel = 3;
+            printf("Verbosity level set to 3\n");
+        }
+    }
+
+    if (gVerbosityLevel >= 1) {
+        printf("Initializing game engine with verbosity level %d\n", gVerbosityLevel);
     }
 
     // Setup graphics
+    if (gVerbosityLevel >= 2) {
+        printf("Setting up graphics...\n");
+    }
     if (!SetupGraphics()) {
         printf("Failed to setup graphics\n");
         return -1;
     }
 
     // Initialize OpenGL
+    if (gVerbosityLevel >= 2) {
+        printf("Initializing OpenGL...\n");
+    }
     if (!InitGL()) {
         printf("Failed to initialize OpenGL\n");
         Cleanup();
@@ -178,52 +192,92 @@ int main(int argc, char* argv[]) {
     }
 
     // Initialize game resources
+    if (gVerbosityLevel >= 2) {
+        printf("Initializing game resources...\n");
+    }
     RudeFontManager::InitFonts();
 
-    if (gVBGame == nullptr)
+    if (gVBGame == nullptr) {
+        if (gVerbosityLevel >= 2) {
+            printf("Creating new RBGame instance...\n");
+        }
         gVBGame = new RBGame();
+    }
 
     RudeText::Init();
+    
+    if (gVerbosityLevel >= 2) {
+        printf("Initialized RudeText\n");
+    }
 
 #ifndef NO_RUDETWEAKER
+    if (gVerbosityLevel >= 2) {
+        printf("Initializing RudeTweaker...\n");
+    }
     RudeTweaker::GetInstance()->Init();
 #endif
+
+    if (gVerbosityLevel >= 1) {
+        printf("Initialization complete. Starting main game loop...\n");
+    }
 
     // Main loop
     bool quit = false;
     SDL_Event e;
+    int frameCount = 0;
 
     while (!quit) {
         // Handle events
         while (SDL_PollEvent(&e) != 0) {
             // User requests quit
             if (e.type == SDL_QUIT) {
+                if (gVerbosityLevel >= 2) {
+                    printf("SDL_QUIT event received, setting quit = true\n");
+                }
                 quit = true;
             }
             // Handle window resize
             else if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED) {
+                if (gVerbosityLevel >= 3) {
+                    printf("Window resize event: %dx%d\n", e.window.data1, e.window.data2);
+                }
                 ResizeGLScene(e.window.data1, e.window.data2);
             }
             // Handle key press
             else if (e.type == SDL_KEYDOWN) {
                 keys[e.key.keysym.scancode] = true;
+                if (gVerbosityLevel >= 3) {
+                    printf("Key pressed: scancode %d\n", e.key.keysym.scancode);
+                }
                 if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                    if (gVerbosityLevel >= 2) {
+                        printf("Escape key pressed, setting quit = true\n");
+                    }
                     quit = true;
                 }
                 else if (e.key.keysym.scancode == SDL_SCANCODE_F1) {
                     // Toggle fullscreen
                     fullscreen = !fullscreen;
+                    if (gVerbosityLevel >= 2) {
+                        printf("F1 pressed, toggling fullscreen to: %s\n", fullscreen ? "ON" : "OFF");
+                    }
                     SDL_SetWindowFullscreen(gWindow, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
                     keys[e.key.keysym.scancode] = false; // Reset key state
                 }
             }
             // Handle key release
             else if (e.type == SDL_KEYUP) {
+                if (gVerbosityLevel >= 3) {
+                    printf("Key released: scancode %d\n", e.key.keysym.scancode);
+                }
                 keys[e.key.keysym.scancode] = false;
             }
             // Handle mouse events (for touch emulation)
             else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 RudeScreenVertex pos(e.button.x, e.button.y);
+                if (gVerbosityLevel >= 3) {
+                    printf("Mouse button down at (%d, %d)\n", e.button.x, e.button.y);
+                }
                 if (gVBGame)
                     gVBGame->TouchDown(pos);
             }
@@ -236,6 +290,9 @@ int main(int argc, char* argv[]) {
                 if (gVBGame)
                     gVBGame->TouchMove(pos, prevPos);
                 prevPos = pos;
+                if (gVerbosityLevel >= 3) {
+                    printf("Mouse motion to (%d, %d)\n", e.motion.x, e.motion.y);
+                }
             }
             else if (e.type == SDL_MOUSEBUTTONUP) {
                 RudeScreenVertex pos(e.button.x, e.button.y);
@@ -246,6 +303,9 @@ int main(int argc, char* argv[]) {
                 if (gVBGame)
                     gVBGame->TouchUp(pos, prevPos);
                 prevPos = pos;
+                if (gVerbosityLevel >= 3) {
+                    printf("Mouse button up at (%d, %d)\n", e.button.x, e.button.y);
+                }
             }
         }
 
@@ -256,15 +316,32 @@ int main(int argc, char* argv[]) {
             glLoadIdentity();
 
             if (gVBGame) {
+                if (gVerbosityLevel >= 3) {
+                    if (frameCount % 60 == 0) { // Print every 60 frames to avoid spam
+                        printf("Rendering frame %d - Calling RBGame::Render(0.03f, %.0f, %.0f)\n", frameCount, (float)windowWidth, (float)windowHeight);
+                    }
+                }
                 gVBGame->Render(0.03f, (float)windowWidth, (float)windowHeight);
+                if (gVerbosityLevel >= 3) {
+                    if (frameCount % 60 == 0) {
+                        printf("Frame %d - RBGame::Render completed\n", frameCount);
+                    }
+                }
             }
 
             // Update screen
             SDL_GL_SwapWindow(gWindow);
+            if (gVerbosityLevel >= 3) {
+                if (frameCount % 60 == 0) {
+                    printf("Frame %d - Screen swapped\n", frameCount);
+                }
+            }
         }
 
         // Small delay to prevent 100% CPU usage
         SDL_Delay(1);
+        
+        frameCount++;
     }
 
     // Cleanup
