@@ -253,6 +253,37 @@ private:
 	
 };
 
+// Include HeadlessScreen for render call recording
+#include "HeadlessScreen.h"
+
+// Macro for recording render calls when HeadlessScreen is active
+#ifdef DEBUG_RENDER
+#define RECORD_RENDER_CALL(func, w, h, bytes, addr, info) \
+    do { \
+        if (HeadlessScreen::GetInstance()) { \
+            HeadlessScreen::GetInstance()->AddRenderCall(func, w, h, bytes, addr, info); \
+        } \
+    } while(0)
+
+#define PUSH_RENDER_SCOPE(func, w, h, bytes, addr, info) \
+    do { \
+        if (HeadlessScreen::GetInstance()) { \
+            HeadlessScreen::GetInstance()->PushScope(func, w, h, bytes, addr, info); \
+        } \
+    } while(0)
+
+#define POP_RENDER_SCOPE() \
+    do { \
+        if (HeadlessScreen::GetInstance()) { \
+            HeadlessScreen::GetInstance()->PopScope(); \
+        } \
+    } while(0)
+#else
+#define RECORD_RENDER_CALL(func, w, h, bytes, addr, info)
+#define PUSH_RENDER_SCOPE(func, w, h, bytes, addr, info)
+#define POP_RENDER_SCOPE()
+#endif
+
 extern RudeGL RGL;
 
 #endif

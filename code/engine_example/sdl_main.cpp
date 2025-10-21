@@ -26,6 +26,7 @@
 #include "RudeFont.h"
 #include "RudeTweaker.h"
 #include "RudeUnitTest.h"
+#include "HeadlessScreen.h"
 
 
 
@@ -152,7 +153,8 @@ void Cleanup() {
 }
 
 int main(int argc, char* argv[]) {
-    // Process command line arguments for verbosity
+    // Process command line arguments for verbosity and output
+    const char* output_path = nullptr;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-v") == 0) {
             gVerbosityLevel = 1;
@@ -166,10 +168,23 @@ int main(int argc, char* argv[]) {
             gVerbosityLevel = 3;
             printf("Verbosity level set to 3\n");
         }
+        else if (strcmp(argv[i], "-vo") == 0 && i + 1 < argc) {
+            output_path = argv[++i];  // Move to next argument which is the path
+            printf("Output path set to: %s\n", output_path);
+        }
     }
 
     if (gVerbosityLevel >= 1) {
         printf("Initializing game engine with verbosity level %d\n", gVerbosityLevel);
+    }
+
+    // Initialize HeadlessScreen if output path is provided
+    if (output_path != nullptr) {
+        InitializeHeadlessScreen(output_path);
+        HeadlessScreen::GetInstance()->SetVerbosity(gVerbosityLevel);
+        if (gVerbosityLevel >= 1) {
+            printf("HeadlessScreen initialized with output path: %s\n", output_path);
+        }
     }
 
     // Setup graphics
@@ -316,6 +331,15 @@ int main(int argc, char* argv[]) {
             glLoadIdentity();
 
             if (gVBGame) {
+                // Initialize HeadlessScreen data for this iteration
+                if (HeadlessScreen::GetInstance()) {
+                    HeadlessScreen::GetInstance()->Clear();
+                    HeadlessScreen::GetInstance()->SetFrameParams(0.03f, windowWidth, windowHeight);
+                    
+                    // Record the top-level render call
+                    HeadlessScreen::GetInstance()->PushScope("render", windowWidth, windowHeight, 0, nullptr, "Top-level render call");
+                }
+
                 if (gVerbosityLevel >= 3) {
                     if (frameCount % 60 == 0) { // Print every 60 frames to avoid spam
                         printf("Rendering frame %d - Calling RBGame::Render(0.03f, %.0f, %.0f)\n", frameCount, (float)windowWidth, (float)windowHeight);
@@ -326,6 +350,14 @@ int main(int argc, char* argv[]) {
                     if (frameCount % 60 == 0) {
                         printf("Frame %d - RBGame::Render completed\n", frameCount);
                     }
+                }
+                
+                // Pop the render scope
+                if (HeadlessScreen::GetInstance()) {
+                    HeadlessScreen::GetInstance()->PopScope();
+                    
+                    // Dump the iteration data
+                    HeadlessScreen::GetInstance()->DumpIteration();
                 }
             }
 

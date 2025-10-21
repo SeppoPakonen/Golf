@@ -39,6 +39,7 @@ endif
 ifeq ($(USE_SDL), 1)
 # For SDL builds, exclude platform-specific implementations
 ENGINE_SOURCES = \
+	$(ENGINE_DIR)/HeadlessScreen.cpp \
 	$(ENGINE_DIR)/RudeButtonAnimControl.cpp \
 	$(ENGINE_DIR)/RudeButtonControl.cpp \
 	$(ENGINE_DIR)/RudeCollision.cpp \

@@ -242,6 +242,59 @@ typedef unsigned long long u64;
 #endif // RUDE_MACOS
 
 
+// Generic POSIX/Linux fallback for standard functions and OpenGL when not on specific platforms
+// This ensures standard C library functions and OpenGL are available on Linux systems
+#ifndef RUDE_WIN
+#ifndef RUDE_IPHONE
+#ifndef RUDE_MACOS
+#ifndef RUDE_SYMBIAN
+#ifndef RUDE_PALM
+// Generic Linux/Unix with OpenGL support (for SDL builds)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+// On Linux with OpenGL
+#ifdef __linux__
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include <GL/glu.h>
+#endif
+
+// Define common types
+typedef unsigned long long u64;
+typedef unsigned int WORD;
+typedef unsigned int GLuint;
+typedef float GLfloat;
+typedef int GLfixed;
+
+// Define string macros if not defined
+#ifndef TCHAR
+#define TCHAR char
+#endif
+#ifndef _stprintf
+#define _stprintf sprintf
+#endif
+#ifndef _tcscat
+#define _tcscat strcat
+#endif
+#ifndef _tcscpy
+#define _tcscpy strcpy
+#endif
+#ifndef _tcslen
+#define _tcslen strlen
+#endif
+#ifndef _T
+#define _T(a) a
+#endif
+
+#endif
+#endif
+#endif
+#endif
+#endif
+
 #ifdef USE_SDL
 #include <stdio.h>
 #include <stdlib.h>

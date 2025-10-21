@@ -12,6 +12,7 @@
 RudeGL RGL;
 
 #define DEBUG 0
+#define DEBUG_RENDER 1  // Enable render debugging for HeadlessScreen
 
 
 const unsigned int kRudeEnableMappings[kNumRudeGLEnableOptions] = {
@@ -86,6 +87,11 @@ void RudeGL::SetViewport(int top, int left, int bottom, int right)
 	
 	glViewport(m_viewport.m_left, m_deviceHeight - m_viewport.m_bottom, screenx, screeny);
 #endif
+
+    // Record this viewport call for HeadlessScreen
+    RECORD_RENDER_CALL("glViewport", screenx, screeny, sizeof(int) * 4, (void*)glViewport, 
+                      "Set viewport to " + std::to_string(m_viewport.m_left) + "," + 
+                      std::to_string(m_viewport.m_top) + " size " + std::to_string(screenx) + "x" + std::to_string(screeny));
 }
 
 /**
@@ -158,6 +164,11 @@ void RudeGL::Frustum(float ox, float oy, float w, float h, float near_plane, flo
 #else
 	glFrustum(ox - m_hw, ox + m_hw, oy - m_hh, oy + m_hh, near_plane, far_plane);
 #endif
+
+    // Record this frustum call for HeadlessScreen
+    RECORD_RENDER_CALL("glFrustum", w, h, sizeof(float) * 6, (void*)glFrustum, 
+                      "Set frustum with origin " + std::to_string(ox) + "," + 
+                      std::to_string(oy) + " size " + std::to_string(w) + "x" + std::to_string(h));
 }
 
 void CrossProd(float x1, float y1, float z1, float x2, float y2, float z2, float res[3]) 
@@ -209,6 +220,10 @@ void RudeGL::LoadIdentity()
 {	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+    // Record this identity call for HeadlessScreen
+    RECORD_RENDER_CALL("glLoadIdentity", 0, 0, 0, (void*)glLoadIdentity, 
+                      "Load identity matrix for modelview");
 }
 
 
@@ -237,6 +252,10 @@ void RudeGL::Scale(float sx, float sy, float sz)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glScalef(sx, sy, sz);
+
+    // Record this scale call for HeadlessScreen
+    RECORD_RENDER_CALL("glScalef", 0, 0, sizeof(float) * 3, (void*)glScalef, 
+                      "Scale by " + std::to_string(sx) + "," + std::to_string(sy) + "," + std::to_string(sz));
 }
 
 /**
@@ -246,6 +265,11 @@ void RudeGL::Rotate(float degrees, float ax, float ay, float az)
 {	
 	glMatrixMode(GL_MODELVIEW);
 	glRotatef(degrees, ax, ay, az);
+
+    // Record this rotate call for HeadlessScreen
+    RECORD_RENDER_CALL("glRotatef", 0, 0, sizeof(float) * 4, (void*)glRotatef, 
+                      "Rotate by " + std::to_string(degrees) + " degrees around axis " + 
+                      std::to_string(ax) + "," + std::to_string(ay) + "," + std::to_string(az));
 }
 
 void RudeGL::RotateX(int degrees)
@@ -513,6 +537,10 @@ void RudeGL::EnableClient(eRudeGLEnableClientOption option, bool enable)
 	else
 		glDisableClientState(kRudeEnableClientMappings[option]);
 		
+
+    // Record this enable client call for HeadlessScreen
+    RECORD_RENDER_CALL("glEnableClientState", 0, 0, sizeof(bool), (void*)kRudeEnableClientMappings[option], 
+                      std::string("Enable client state ") + (enable ? "on" : "off") + " for option " + std::to_string(option));
 }
 
 /**

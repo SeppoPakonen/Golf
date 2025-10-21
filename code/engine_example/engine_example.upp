@@ -1,0 +1,21 @@
+description "Rude Engine Example Application";
+
+uses
+	engine,
+	Core;
+
+file
+	sdl_main.cpp,
+	Classes/RBCamera.cpp,
+	Classes/RBCamera.h,
+	Classes/RBDecorators.cpp,
+	Classes/RBDecorators.h,
+	Classes/RBGame.cpp,
+	Classes/RBGame.h,
+	Classes/RBGameBase.h,
+	Classes/RBKeyMap.cpp,
+	Classes/RBKeyMap.h,
+	Classes/RBKeyTracker.cpp,
+	Classes/RBKeyTracker.h,
+	Classes/RBUITitle.cpp,
+	Classes/RBUITitle.h;
