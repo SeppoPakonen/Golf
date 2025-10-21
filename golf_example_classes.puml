@@ -1,0 +1,122 @@
+@startuml Golf Example Application Classes
+!theme plain
+
+package "Golf Game Classes" {
+  class RBGame : RudeGame {
+    -RBKeyMap *m_keymap
+    -RBGameBase *m_game
+    -bool m_initialized
+    -bool m_restarting
+    +RBGame()
+    +~RBGame()
+    +virtual Destroy()
+    +Init()
+    +virtual Update(float)
+    +virtual Render(float, float, float)
+    +virtual TouchDown(RudeScreenVertex&)
+    +virtual TouchMove(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual TouchUp(RudeScreenVertex&, RudeScreenVertex&)
+    +SetGame(RBGameBase *)
+    +GetGame()
+    +bool GetRestarting()
+    +SetRestarting(bool)
+  }
+
+  class RBGameBase {
+    +virtual ~RBGameBase()
+    +virtual Init()
+    +virtual Destroy()
+    +virtual Update(float)
+    +virtual Render(float, float)
+    +virtual TouchDown(RudeScreenVertex&)
+    +virtual TouchMove(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual TouchUp(RudeScreenVertex&, RudeScreenVertex&)
+  }
+
+  class RBUITitle : RBGameBase {
+    -RudeTimer m_timer
+    -RudeTexture *m_logoTexture
+    -RudeFont *m_font
+    +RBUITitle()
+    +~RBUITitle()
+    +virtual Init()
+    +virtual Destroy()
+    +virtual Render(float, float)
+    +virtual TouchDown(RudeScreenVertex&)
+  }
+
+  class RBDecorator {
+    -RudeTexture *m_texture
+    -float m_position[3]
+    -float m_rotation[3]
+    -float m_scale[3]
+    -float m_color[4]
+    +RBDecorator()
+    +~RBDecorator()
+    +SetTexture(char *)
+    +SetPosition(float, float, float)
+    +SetRotation(float, float, float)
+    +SetScale(float, float, float)
+    +SetColor(float, float, float, float)
+    +virtual Render()
+  }
+
+  class RBDecoratorCollection {
+    -std::vector<RBDecorator *> m_decorators
+    +AddDecorator(RBDecorator *)
+    +RemoveDecorator(RBDecorator *)
+    +Clear()
+    +virtual Render()
+  }
+
+  class RBKeyMap {
+    -static RBKeyMap *s_instance
+    -std::map<int, std::string> m_keyMap
+    +static RBKeyMap *getInstance()
+    +MapKey(int, char *)
+    +GetAction(int)
+    +Save()
+    +Load()
+  }
+
+  class RBKeyTracker {
+    -bool m_keys[SDL_NUM_SCANCODES]
+    -bool m_prevKeys[SDL_NUM_SCANCODES]
+    +RBKeyTracker()
+    +Update()
+    +KeyDown(int)
+    +KeyUp(int)
+    +IsPressed(int)
+    +IsTriggered(int)
+    +IsReleased(int)
+  }
+
+  class RBCamera {
+    -btVector3 m_position
+    -btVector3 m_target
+    -btVector3 m_up
+    -float m_fov
+    -float m_aspect
+    -float m_near
+    -float m_far
+    +RBCamera()
+    +SetPosition(float, float, float)
+    +SetTarget(float, float, float)
+    +SetPerspective(float, float, float, float)
+    +Update()
+    +LookAt()
+  }
+}
+
+' Inheritance relationships
+RBGame --|> RudeGame
+RBUITitle --|> RBGameBase
+RBDecoratorCollection *-- RBDecorator
+
+' Dependencies
+RBGame ..> RBGameBase : uses
+RBGame ..> RBKeyMap : uses
+RBUITitle ..> RudeTimer : uses
+RBUITitle ..> RudeTexture : uses
+RBUITitle ..> RudeFont : uses
+@enduml

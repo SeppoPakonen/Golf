@@ -1,0 +1,111 @@
+@startuml Rude Engine Utility Classes
+!theme plain
+
+package "Rude Engine Utilities" {
+  class RudeDebug {
+    -static char sLogfile[80]
+    +Init()
+    +Write(char *, int, char *, ...)
+    +PurgeLog()
+  }
+
+  class RudeTweaker {
+    -static RudeTweaker *sInstance
+    -std::map<std::string, void *> mTweaks
+    -std::map<std::string, int> mTweakTypes
+    +GetInstance()
+    +AddTweak(char *, void *, int)
+    +Update()
+    +Render()
+  }
+
+  class RudeText {
+    -static char sText[256]
+    -static RudeFont *sFont
+    +Init()
+    +Set(char *, ...)
+    +Render(float, float, float)
+    +GetWidth()
+    +GetHeight()
+  }
+
+  class RudeTimeCounter {
+    -unsigned long long m_start
+    -unsigned long long m_end
+    +Start()
+    +Stop()
+    +GetElapsedTime()
+  }
+
+  class RudePerf {
+    -static float sFrameTime
+    -static float sFPS
+    -static unsigned int sFrameCount
+    +NextFrame(float)
+    +GetFrameTime()
+    +GetFPS()
+    +GetFrameCount()
+  }
+
+  class RudeGlobals {
+    -static char sPath[256]
+    +GetPath(char *)
+    +GetDeviceWidth()
+    +GetDeviceHeight()
+  }
+
+  class RudeRegistry {
+    -static std::map<std::string, std::string> sRegistry
+    +Set(char *, char *)
+    +Get(char *, char *)
+    +Save()
+    +Load()
+  }
+
+  class RudeFile {
+    +ReadAll(char *, void *&, int &)
+    +WriteAll(char *, void *, int)
+    +Exists(char *)
+    +GetSize(char *)
+  }
+
+  class RudeUnitTest {
+    -static int sTestsRun
+    -static int sTestsPassed
+    +BeginTest(char *)
+    +EndTest()
+    +Assert(bool, char *, ...)
+    +GetResults()
+  }
+
+  class HeadlessScreen {
+    -static HeadlessScreen *sInstance
+    -std::vector<RenderCall> mRenderCalls
+    -std::vector<GameIterationData> mIterationData
+    +GetInstance()
+    +AddRenderCall(char *, int, int, int, void *, char *)
+    +PushScope(char *, int, int, int, void *, char *)
+    +PopScope()
+    +DumpIteration()
+    +Clear()
+  }
+
+  class SoundEngine {
+    -static SoundEngine *sInstance
+    -std::map<std::string, void *> mSounds
+    +GetInstance()
+    +LoadSound(char *, char *)
+    +PlaySound(char *)
+    +StopSound(char *)
+    +SetVolume(char *, float)
+  }
+}
+
+' Dependencies
+RudeText ..> RudeFont : uses
+RudeTweaker ..> RudeText : uses
+RudeDebug ..> RudeGlobals : uses
+SoundEngine ..> RudeGlobals : uses
+HeadlessScreen ..> RenderCall : contains
+HeadlessScreen ..> GameIterationData : contains
+@enduml

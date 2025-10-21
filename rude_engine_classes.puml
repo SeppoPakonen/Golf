@@ -1,0 +1,173 @@
+@startuml Rude Engine Core Classes
+!theme plain
+
+package "Rude Engine Core" {
+  abstract class RudeControl {
+    +SetEnabled(bool)
+    +SetVisible(bool)
+    +SetPosition(float, float, float, float)
+    +virtual TouchDown(RudeScreenVertex&)
+    +virtual TouchMove(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual TouchUp(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual Render(float, float)
+  }
+
+  class RudeButtonControl {
+    -char *m_text
+    -RudeTexture *m_texture
+    -bool m_down
+    +SetTexture(char *)
+    +SetText(char *)
+    +SetDown(bool)
+    +virtual TouchDown(RudeScreenVertex&)
+    +virtual TouchMove(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual TouchUp(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual Render(float, float)
+  }
+
+  class RudeButtonAnimControl {
+    -RudeTexture *m_textures[2]
+    +SetTextures(char *, char *)
+    +virtual Render(float, float)
+  }
+
+  class RudeGame {
+    -static bool s_initialized
+    -static RudeControl *s_root
+    -static RudeTimer s_timer
+    +Init()
+    +virtual Destroy()
+    +virtual Init()
+    +virtual Update(float)
+    +virtual Render(float, float, float)
+    +virtual TouchDown(RudeScreenVertex&)
+    +virtual TouchMove(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual TouchUp(RudeScreenVertex&, RudeScreenVertex&)
+    +virtual KeyDown(int)
+    +virtual KeyUp(int)
+  }
+
+  class RudeGL {
+    -float m_viewmat[16]
+    -bool m_enables[2]
+    -bool m_enableClients[3]
+    -RudeRect m_viewport
+    -btVector3 m_eye
+    -btVector3 m_lookAt
+    +SetViewport(int, int, int, int)
+    +Ortho(float, float, float, float, float, float)
+    +Frustum(float, float, float, float, float, float)
+    +LoadIdentity()
+    +Translate(float, float, float)
+    +Scale(float, float, float)
+    +Rotate(float, float, float, float)
+    +Enable(eRudeGLEnableOption, bool)
+    +EnableClient(eRudeGLEnableClientOption, bool)
+  }
+
+  class RudeMath {
+    +static void EnableFPE()
+    +static float Sqrt(float)
+    +static float Cos(float)
+    +static float Sin(float)
+    +static float InvSqrt(float)
+  }
+
+  class RudeTimer {
+    +RudeTimer()
+    +Restart()
+    +float ElapsedSeconds()
+  }
+
+  class RudeFont {
+    -char *m_name
+    -int m_size
+    -int m_style
+    -RudeTexture *m_texture
+    +Load(char *, int, int)
+    +Unload()
+    +SetSize(int)
+    +SetColor(RudeColorFloat&)
+    +void Write(float, float, float, char *, int, unsigned int, unsigned int, unsigned int)
+  }
+
+  class RudeFontManager {
+    -static RudeFont *s_fonts[10]
+    +InitFonts()
+    +GetFont(char *, int, int)
+    +ReleaseFont(RudeFont *)
+  }
+
+  class RudeTexture {
+    -GLuint m_texture
+    -int m_width
+    -int m_height
+    -int m_origWidth
+    -int m_origHeight
+    +LoadFromPNG(char *)
+    +LoadFromMemory(void *, int, int, int, bool)
+    +SetActive()
+    +GetWidth()
+    +GetHeight()
+  }
+
+  class RudeTextureManager {
+    -static std::map<std::string, RudeTexture *> s_textures
+    +LoadTexture(char *)
+    +LoadTextureFromPVRTFile(char *)
+    +UnloadTexture(char *)
+    +UnloadAll()
+  }
+
+  class RudeObject {
+    -std::string m_name
+    -float m_position[3]
+    -float m_rotation[3]
+    -float m_scale[3]
+    -RudeMesh *m_mesh
+    -RudeTexture *m_texture
+    +Load(char *)
+    +LoadSkinnedMesh(char *)
+    +SetPosition(float, float, float)
+    +SetRotation(float, float, float)
+    +SetScale(float, float, float)
+    +Render()
+  }
+
+  class RudeSkybox {
+    -float m_verts[36 * 3]
+    -float m_uvs[24 * 2]
+    -RudeTexture *m_textures[6]
+    +SetTexture(int, char *)
+    +Render()
+  }
+
+  class RudePhysics {
+    +Init()
+    +Shutdown()
+    +Update(float)
+    +AddRigidBody(btRigidBody *)
+    +RemoveRigidBody(btRigidBody *)
+  }
+
+  class RudeCollision {
+    +SphereSphereCollision(RudePhysicsSphere&, RudePhysicsSphere&)
+    +SphereBoxCollision(RudePhysicsSphere&, RudePhysicsObject&)
+    +BoxBoxCollision(RudePhysicsObject&, RudePhysicsObject&)
+  }
+}
+
+' Inheritance relationships
+RudeButtonControl --|> RudeControl
+RudeButtonAnimControl --|> RudeButtonControl
+RudeFontManager ..> RudeFont : uses
+
+' Composition relationships
+RudeGame *-- RudeTimer
+RudeGL *-- RudeRect
+RudeFont *-- RudeTexture
+RudeFontManager *-- RudeFont
+RudeObject *-- RudeMesh
+RudeObject *-- RudeTexture
+RudeSkybox *-- RudeTexture
+@enduml

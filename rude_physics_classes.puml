@@ -1,0 +1,73 @@
+@startuml Rude Engine Physics Classes
+!theme plain
+
+package "Rude Physics" {
+  class RudePhysics {
+    -btDiscreteDynamicsWorld *m_dynamicsWorld
+    -btDefaultCollisionConfiguration *m_collisionConfiguration
+    -btCollisionDispatcher *m_dispatcher
+    -btDbvtBroadphase *m_broadphase
+    -btSequentialImpulseConstraintSolver *m_solver
+    +Init()
+    +Shutdown()
+    +Update(float)
+    +AddRigidBody(btRigidBody *)
+    +RemoveRigidBody(btRigidBody *)
+    +SetGravity(btVector3&)
+  }
+
+  class RudePhysicsObject {
+    -btRigidBody *m_rigidBody
+    -btCollisionShape *m_shape
+    -btDefaultMotionState *m_motionState
+    -float m_mass
+    +Init(float, btCollisionShape *, float[3])
+    +SetPosition(float, float, float)
+    +GetPosition(float[3])
+    +SetRotation(float, float, float)
+    +GetRotation(float[3])
+    +SetVelocity(float, float, float)
+    +GetVelocity(float[3])
+    +ApplyForce(btVector3&, btVector3&)
+    +ApplyImpulse(btVector3&, btVector3&)
+    +Render()
+  }
+
+  class RudePhysicsSphere {
+    -float m_radius
+    +Init(float, float, float[3])
+    +SetRadius(float)
+    +GetRadius()
+  }
+
+  class RudePhysicsMesh {
+    -btTriangleMesh *m_meshInterface
+    -btBvhTriangleMeshShape *m_shape
+    +Init(float, char *)
+    +LoadMesh(char *)
+  }
+
+  class RudeCollision {
+    +SphereSphereCollision(RudePhysicsSphere&, RudePhysicsSphere&)
+    +SphereBoxCollision(RudePhysicsSphere&, RudePhysicsObject&)
+    +BoxBoxCollision(RudePhysicsObject&, RudePhysicsObject&)
+    +RayCast(btVector3&, btVector3&, RudePhysicsObject&)
+  }
+}
+
+' Inheritance relationships
+RudePhysicsSphere --|> RudePhysicsObject
+
+' Composition relationships
+RudePhysics *-- btDiscreteDynamicsWorld
+RudePhysics *-- btDefaultCollisionConfiguration
+RudePhysics *-- btCollisionDispatcher
+RudePhysics *-- btDbvtBroadphase
+RudePhysics *-- btSequentialImpulseConstraintSolver
+RudePhysicsObject *-- btRigidBody
+RudePhysicsObject *-- btCollisionShape
+RudePhysicsObject *-- btDefaultMotionState
+RudePhysicsMesh *-- btTriangleMesh
+RudePhysicsMesh *-- btBvhTriangleMeshShape
+
+@enduml
